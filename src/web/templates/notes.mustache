@@ -1,0 +1,18 @@
+<h1 class="page-title">備考</h1>
+<ul class="nav nav-pills mb-3">
+  <li class="nav-item"><a class="nav-link {{^showAll}}active{{/showAll}}" href="/notes">未対応</a></li>
+  <li class="nav-item"><a class="nav-link {{#showAll}}active{{/showAll}}" href="/notes?all=1">対応済みも表示</a></li>
+</ul>
+{{#panels}}
+<div class="panel mb-3">
+  <div class="fw-bold mb-1">
+    <a href="/blank?category={{categoryId}}&q={{qEsc}}">{{itemLabel}}</a>
+    <span class="text-muted small ms-1">{{categoryName}}</span>
+  </div>
+  {{#list}}{{> note_list}}{{/list}}
+</div>
+{{/panels}}
+{{^panels}}
+<div class="panel text-muted">{{#showAll}}備考はありません。{{/showAll}}{{^showAll}}未対応の備考はありません。{{/showAll}}
+  備考は、無地在庫の画面で品番ごとに追加できます。</div>
+{{/panels}}

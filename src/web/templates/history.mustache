@@ -1,0 +1,26 @@
+<h1 class="page-title">操作履歴</h1>
+<form class="mb-3 d-flex gap-2" method="get">
+  <select class="form-select" name="kind" onchange="this.form.submit()">
+    <option value="">すべての操作</option>
+    {{#kinds}}<option value="{{key}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/kinds}}
+  </select>
+</form>
+<div class="panel p-0 table-responsive">
+  <table class="table table-sm mb-0 align-middle">
+    <thead><tr><th>日時</th><th>操作</th><th>対象</th><th class="text-end">増減</th><th>担当</th><th>メモ</th></tr></thead>
+    <tbody>
+    {{#items}}
+      <tr><td class="text-nowrap">{{createdJst}}</td><td class="text-nowrap">{{kindLabel}}</td>
+          <td>{{targetLabel}}</td><td class="text-end"><span class="num {{#deltaPos}}delta-pos{{/deltaPos}}{{^deltaPos}}delta-neg{{/deltaPos}}">{{deltaStr}}</span></td>
+          <td class="text-nowrap">{{username}}</td><td>{{note}}</td></tr>
+    {{/items}}
+    {{^items}}
+      <tr><td colspan="6" class="text-muted">履歴がありません。</td></tr>
+    {{/items}}
+    </tbody>
+  </table>
+</div>
+<div class="d-flex justify-content-between mt-3">
+  {{#hasPrev}}<a class="btn btn-outline-primary" href="/history?page={{prevNum}}&kind={{kind}}">← 新しい方</a>{{/hasPrev}}{{^hasPrev}}<span></span>{{/hasPrev}}
+  {{#hasNext}}<a class="btn btn-outline-primary" href="/history?page={{nextNum}}&kind={{kind}}">古い方 →</a>{{/hasNext}}
+</div>

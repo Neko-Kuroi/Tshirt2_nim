@@ -1,0 +1,36 @@
+<h1 class="page-title">入荷登録</h1>
+{{#hasItemNotes}}
+<div class="panel mb-3" style="max-width:560px">
+  <div class="fw-bold mb-2">この品番の備考(未対応)</div>
+  {{#noteList}}{{> note_list}}{{/noteList}}
+</div>
+{{/hasItemNotes}}
+<form method="post" class="panel d-grid gap-3" style="max-width:560px">
+  <input type="hidden" name="csrf_token" value="{{csrf}}">
+  <div>
+    <label class="form-label" for="item_id">品番</label>
+    <select class="form-select" id="item_id" name="item_id" required>
+      <option value="">選んでください</option>
+      {{#items}}
+      <option value="{{id}}" {{#selected}}selected{{/selected}}
+        data-uses-color="{{usesColorAttr}}"
+        data-uses-size="{{usesSizeAttr}}"
+        data-uses-variant-name="{{usesVariantNameAttr}}">
+        [{{categoryName}}] {{label}}</option>
+      {{/items}}
+    </select>
+    {{#noItems}}<div class="form-text">品番が未登録です。管理者が「品番」から登録してください。</div>{{/noItems}}
+  </div>
+  <div id="f_variant_name"><label class="form-label">種類名(デザイン名など)</label>
+    <input class="form-control" name="variant_name" value="{{formVariantName}}"></div>
+  <div id="f_color"><label class="form-label">色</label>
+    <input class="form-control" name="color" list="colors" value="{{formColor}}">
+    <datalist id="colors">{{#colors}}<option value="{{.}}">{{/colors}}</datalist></div>
+  <div id="f_size"><label class="form-label">サイズ</label>
+    <input class="form-control" name="size" list="sizes" value="{{formSize}}">
+    <datalist id="sizes"><option value="S"><option value="M"><option value="L"><option value="XL"><option value="XXL"><option value="3XL"><option value="FREE"></datalist></div>
+  <div>{{#qty}}{{> qty_input}}{{/qty}}</div>
+  <div><label class="form-label">メモ(納品書番号など)</label>
+    <input class="form-control" name="note" value="{{formNote}}"></div>
+  <button class="btn btn-primary btn-lg">入荷を登録</button>
+</form>

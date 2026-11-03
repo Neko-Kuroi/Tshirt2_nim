@@ -1,0 +1,9 @@
+<label class="form-label" for="{{name}}">{{label}}</label>
+<div class="qty-step">
+  <button type="button" class="btn btn-outline-secondary" data-step="-10">-10</button>
+  <button type="button" class="btn btn-outline-secondary" data-step="-1">−</button>
+  <input class="form-control" id="{{name}}" name="{{name}}" inputmode="numeric" pattern="-?[0-9]*"
+         value="{{value}}" required {{#negative}}data-allow-negative="1"{{/negative}}>
+  <button type="button" class="btn btn-outline-secondary" data-step="1">＋</button>
+  <button type="button" class="btn btn-outline-secondary" data-step="10">+10</button>
+</div>

@@ -1,0 +1,41 @@
+﻿カテゴリー,ブランド,品番,商品名,色,サイズ,種類名,数量,品番の状態
+Tシャツ,,,ノーブランド,白,S,,1,使用中
+Tシャツ,100%_cotton,A\B,ワイルド,黒,M,,6,使用中
+Tシャツ,CR,n,"xy",黒,M,,1,使用中
+Tシャツ,E1,n,'=1+1,黒,M,,1,使用中
+Tシャツ,E2,n,'+1,黒,M,,1,使用中
+Tシャツ,E3,n,'-1,黒,M,,1,使用中
+Tシャツ,E4,n,'@SUM(A1),黒,M,,1,使用中
+Tシャツ,E5,n,'	=1,黒,M,,1,使用中
+Tシャツ,Gildan,G200,"A,""B""
+C",黒,M,,2,使用中
+Tシャツ,Lead,n, 先頭に空白,黒,M,,1,使用中
+Tシャツ,Old,1,停止予定,赤,L,,2,停止中
+Tシャツ,Printstar,085-CVT,Tシャツ,Blue,M,,3,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,あお,M,,3,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,白,M,,0,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,赤,M,,3,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,S,,2,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,M,,19,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,L,,3,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,XL,,1,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,xl,,2,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,2XL,,5,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,XXL,,1,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,FREE,,6,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,F,,7,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,007,,6,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,7,,7,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,9,,5,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,12,,1,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,28,,3,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,30,,4,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,99999999999999999999,,2,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,3L,,5,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,é,,7,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,²,,3,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,é,,6,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,１２,,4,使用中
+Tシャツ,Printstar,085-CVT,Tシャツ,黒,ＸＬ,,1,使用中
+Tシャツ,United Athle,5001,Tシャツ,赤,L,,1,使用中
+Tシャツ,United Athle,5001,Tシャツ,黒,M,,4,使用中

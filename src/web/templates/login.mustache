@@ -1,0 +1,13 @@
+<div class="mx-auto mt-5" style="max-width:420px">
+  <h1 class="page-title">在庫管理</h1>
+  <form method="post" class="panel d-grid gap-3">
+    <input type="hidden" name="csrf_token" value="{{csrf}}">
+    <div><label class="form-label" for="username">ユーザー名</label>
+      <input class="form-control" id="username" name="username" autocomplete="username" autofocus required></div>
+    <div><label class="form-label" for="password">パスワード</label>
+      <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required></div>
+    <div class="form-check"><input class="form-check-input" type="checkbox" id="remember" name="remember">
+      <label class="form-check-label" for="remember">この端末でログインを保持する</label></div>
+    <button class="btn btn-primary btn-lg">ログイン</button>
+  </form>
+</div>

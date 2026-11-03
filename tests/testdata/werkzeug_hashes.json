@@ -1,0 +1,46 @@
+[
+ {
+  "pw": "password123",
+  "hash": "scrypt:32768:8:1$gbdv7yhHhFdCAJc3$bf925dc014918bbbdb599a35f58b461de5507d3bd4e43ef44be84335867393fddaa0ca3389c4faa3b7ca5a49d90e0209aaa133e352952fc4a3200f435fae4059"
+ },
+ {
+  "pw": "password123",
+  "hash": "pbkdf2:sha256:1000000$UFtyGKVnUfdlZayH$f8c719d5c26e045f6c52993ccc75d1cd675711f8ff253e2291e3f9bf00bbe963"
+ },
+ {
+  "pw": "password123",
+  "hash": "pbkdf2:sha1:1000000$JlJlFCMNhqBzyhgc$0b9a0a96cf756b3959499d8c157da113b9a97cb6"
+ },
+ {
+  "pw": "password123",
+  "hash": "pbkdf2:sha512:1000000$VNocRClDKiVcaG4h$9063b95bc724e175a1e18d68cf884e42b3a486c490c22f430bb942ee2ef166525bfb527d8070832c314b73e6eca4f65a35c7f285f56b8eea78df8bb093cd9519"
+ },
+ {
+  "pw": "テストpass123",
+  "hash": "scrypt:32768:8:1$dll5k8tP40208DkJ$45b5ce4e99e85bde05411ca932a008d712556f589fdb1c664b532d5a6ef570e1a958dd8c075199e87d25331c203ed7eafd1ec0b949c64bea0c3ff13e00c92009"
+ },
+ {
+  "pw": "テストpass123",
+  "hash": "pbkdf2:sha256:1000000$xtkeoZfMfSOoEAT8$745a2d270a85e89b39e16b36d1c13e6070653443a02c9b1f8b910fde41201124"
+ },
+ {
+  "pw": "テストpass123",
+  "hash": "pbkdf2:sha1:1000000$JmVgEA3gqWO7q3ev$e63db8b4511fd625ab0da0b366d2a69ab668d849"
+ },
+ {
+  "pw": "テストpass123",
+  "hash": "pbkdf2:sha512:1000000$qqtRsCp9AXgforyx$8b88ab52602a290f52e40a1920bb5ea5bd78463dfe60abd72c7cc5f360e6daee61189ad6b3dea480fa1f73b3de4ce5e93039d7d1cf24b83cb752115673bcc706"
+ },
+ {
+  "pw": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "hash": "scrypt:32768:8:1$iQ2KHOV7po7W1xLo$2e61071c0fdaa279fa577e89efe92f0ee5ab878f6ebfad79d56580107a3e8a84bceb609b0c41dc06a8e30fedbcee72f7d9712d6acad43367ef73d68f3b1fae41"
+ },
+ {
+  "pw": "p@ss word\t!",
+  "hash": "scrypt:32768:8:1$U0QxxgH1ZfJqSE7i$af9caf132a65dd95ac3851a33b33968849cc9286ca9692c3721e0d252d5d7b4c86bae8c7862efd61088e9fbeee7b00442df545b78d312d6b52c4d0e5f3fc9df9"
+ },
+ {
+  "pw": "ああああああああ",
+  "hash": "scrypt:32768:8:1$GO6s8bBtuzmH8jUk$5a4b065b76254abef53f5abe20fa2635f0d884ca64bf7b98b9b8a3ff6f29d9adb148e6d25e3027013024690599685c04ab0cf3150ae64e0a7b5db352747e7cec"
+ }
+]

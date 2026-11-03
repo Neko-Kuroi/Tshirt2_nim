@@ -1,0 +1,90 @@
+<div class="d-flex justify-content-between align-items-baseline flex-wrap gap-2">
+  <h1 class="page-title">無地在庫(一覧)</h1>
+  <a class="btn btn-sm btn-outline-secondary" href="/blank">品番ごとの表に戻る</a>
+</div>
+
+<form method="get" class="panel mb-3">
+  <div class="row g-2">
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1" for="f-category">カテゴリー</label>
+      <select class="form-select form-select-sm" id="f-category" name="category">
+        <option value="">すべて</option>
+        {{#cats}}<option value="{{id}}"{{#selected}} selected{{/selected}}>{{name}}</option>{{/cats}}
+      </select>
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1" for="f-style">タイプ(長袖・半袖など)</label>
+      <select class="form-select form-select-sm" id="f-style" name="style">
+        <option value="">すべて</option>
+        {{#styles}}<option value="{{v}}"{{#selected}} selected{{/selected}}>{{v}}</option>{{/styles}}
+      </select>
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1" for="f-color">色・種類</label>
+      <select class="form-select form-select-sm" id="f-color" name="color">
+        <option value="">すべて</option>
+        {{#colors}}<option value="{{v}}"{{#selected}} selected{{/selected}}>{{v}}</option>{{/colors}}
+      </select>
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1" for="f-size">サイズ</label>
+      <select class="form-select form-select-sm" id="f-size" name="size">
+        <option value="">すべて</option>
+        {{#sizes}}<option value="{{v}}"{{#selected}} selected{{/selected}}>{{v}}</option>{{/sizes}}
+      </select>
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label small mb-1" for="f-q">ブランド・品番・商品名</label>
+      <input class="form-control form-control-sm" id="f-q" name="q" value="{{q}}" type="search" maxlength="100">
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1" for="f-sort">並べ替え</label>
+      <select class="form-select form-select-sm" id="f-sort" name="sort">
+        {{#sorts}}<option value="{{key}}"{{#selected}} selected{{/selected}}>{{label}}</option>{{/sorts}}
+      </select>
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label small mb-1" for="f-dir">順序</label>
+      <select class="form-select form-select-sm" id="f-dir" name="dir">
+        <option value="asc"{{#dirAsc}} selected{{/dirAsc}}>昇順(小さい順・あいうえお順)</option>
+        <option value="desc"{{#dirDesc}} selected{{/dirDesc}}>降順(大きい順)</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-check mt-2">
+    <input class="form-check-input" type="checkbox" name="in_stock" value="1" id="f-instock"{{#inStock}} checked{{/inStock}}>
+    <label class="form-check-label small" for="f-instock">在庫があるものだけ</label>
+  </div>
+  <div class="mt-2 d-flex gap-2">
+    <button class="btn btn-primary btn-sm">表示</button>
+    <a class="btn btn-outline-secondary btn-sm" href="/blank/list">リセット</a>
+  </div>
+</form>
+
+<div class="text-muted small mb-2">
+  <span class="num">{{count}}</span> 件 / 合計 <span class="num">{{totalQty}}</span>
+  {{#truncated}}<span class="text-danger ms-2">先頭の{{shown}}件だけ表示しています。条件を絞り込んでください。</span>{{/truncated}}
+</div>
+<div class="panel p-0 table-responsive">
+  <table class="table table-sm matrix align-middle mb-0">
+    <thead><tr>
+      {{#headers}}<th class="{{cls}}"><a class="text-decoration-none" href="{{url}}">{{label}} {{mark}}</a></th>
+      {{/headers}}
+    </tr></thead>
+    <tbody>
+    {{#rows}}
+      <tr class="{{rowCls}}">
+        <td class="text-nowrap">{{categoryName}}</td>
+        <td class="text-nowrap">{{styleDisp}}</td>
+        <td>{{itemLabel}}{{#stopped}} <span class="badge text-bg-secondary">停止中</span>{{/stopped}}</td>
+        <td class="text-nowrap">{{specDisp}}</td>
+        <td class="text-nowrap">{{sizeDisp}}</td>
+        <td class="num {{qtyCls}}">{{qty}}</td>
+      </tr>
+    {{/rows}}
+    {{^rows}}
+      <tr><td colspan="6" class="text-muted">該当する在庫がありません。</td></tr>
+    {{/rows}}
+    </tbody>
+  </table>
+</div>

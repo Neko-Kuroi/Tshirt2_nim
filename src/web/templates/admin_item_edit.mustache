@@ -1,0 +1,14 @@
+<h1 class="page-title">品番編集</h1>
+<form method="post" class="panel d-grid gap-3" style="max-width:560px">
+  <input type="hidden" name="csrf_token" value="{{csrf}}">
+  <div class="text-muted">カテゴリー: {{categoryName}}</div>
+  <input class="form-control" name="brand" value="{{brand}}" placeholder="ブランド">
+  <input class="form-control" name="item_no" value="{{itemNo}}" placeholder="品番">
+  <div class="form-text mt-0">ブランドか品番のどちらかは必須です。</div>
+  <input class="form-control" name="name" value="{{name}}" placeholder="商品名(任意)">
+  <input class="form-control" name="style" value="{{style}}" list="style-list" maxlength="30" placeholder="タイプ(任意。例: 長袖・半袖)">
+  <datalist id="style-list">{{#styles}}<option value="{{v}}">{{/styles}}</datalist>
+  <div class="form-check"><input class="form-check-input" type="checkbox" name="is_active" id="ia"{{#isActive}} checked{{/isActive}}>
+    <label class="form-check-label" for="ia">使用中(外すと入荷・変換の候補に出なくなります)</label></div>
+  <button class="btn btn-primary">保存</button>
+</form>

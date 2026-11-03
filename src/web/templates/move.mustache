@@ -1,0 +1,22 @@
+<h1 class="page-title">出荷・棚卸し調整</h1>
+<form method="post" class="panel d-grid gap-3" style="max-width:560px">
+  <input type="hidden" name="csrf_token" value="{{csrf}}">
+  <div><label class="form-label">操作</label>
+    <select class="form-select" name="kind" required>
+      <option value="ship" {{^kindAdjust}}selected{{/kindAdjust}}>出荷(数量ぶん減らす)</option>
+      <option value="adjust" {{#kindAdjust}}selected{{/kindAdjust}}>棚卸し調整(＋で増やす / −で減らす・理由必須)</option>
+    </select></div>
+  <div><label class="form-label">対象の在庫</label>
+    <select class="form-select" name="target" required>
+      <option value="">選んでください</option>
+      <optgroup label="プリント済み">
+        {{#products}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>{{/products}}
+      </optgroup>
+      <optgroup label="無地">
+        {{#variants}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>{{/variants}}
+      </optgroup>
+    </select></div>
+  <div>{{#qty}}{{> qty_input}}{{/qty}}</div>
+  <div><label class="form-label">メモ・理由</label><input class="form-control" name="note" value="{{formNote}}"></div>
+  <button class="btn btn-primary btn-lg">登録</button>
+</form>

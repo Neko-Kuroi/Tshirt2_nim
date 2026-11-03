@@ -1,0 +1,14 @@
+<details class="note-add mt-2">
+  <summary class="btn btn-sm btn-outline-primary">備考を追加</summary>
+  <form method="post" action="/notes" class="d-grid gap-2 mt-2" style="max-width:560px">
+    <input type="hidden" name="csrf_token" value="{{csrf}}">
+    <input type="hidden" name="item_id" value="{{itemId}}">
+    <input type="hidden" name="back" value="{{back}}">
+    <input class="form-control" name="target" list="targets-{{itemId}}" maxlength="64"
+           placeholder="対象の色・種類(空欄なら品番全体)">
+    <datalist id="targets-{{itemId}}">{{#targets}}<option value="{{.}}">{{/targets}}</datalist>
+    <textarea class="form-control" name="body" rows="3" maxlength="1000" required
+              placeholder="例: これで入荷は最後。この色は、別ブランドの同じ色か近い色を、仕入れ先を変えて探す。"></textarea>
+    <button class="btn btn-primary">追加</button>
+  </form>
+</details>

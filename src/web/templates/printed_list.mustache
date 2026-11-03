@@ -1,0 +1,24 @@
+<div class="d-flex justify-content-between align-items-baseline flex-wrap gap-2">
+  <h1 class="page-title">プリント済み在庫</h1>
+  <a class="btn btn-sm btn-outline-secondary" href="/export/printed.csv">CSVダウンロード</a>
+</div>
+<form class="mb-3 d-flex gap-2" method="get">
+  <input class="form-control" name="q" value="{{q}}" placeholder="デザイン・品番・色で検索" type="search">
+  <button class="btn btn-primary">検索</button>
+</form>
+{{#groups}}
+<div class="panel mb-3">
+  <div class="d-flex justify-content-between"><h2 class="h6 fw-bold">{{name}}</h2>
+    <span class="num text-muted">{{total}}</span></div>
+  <div class="table-responsive"><table class="table table-sm mb-0 align-middle">
+    <tbody>
+    {{#rows}}
+      <tr><td>{{categoryName}}</td><td>{{itemLabel}}</td>
+          <td>{{spec}}</td><td class="num fw-bold">{{quantity}}</td></tr>
+    {{/rows}}
+    </tbody></table></div>
+</div>
+{{/groups}}
+{{^groups}}
+<div class="panel text-muted">プリント済み在庫がありません。「プリント変換」で作成できます。</div>
+{{/groups}}

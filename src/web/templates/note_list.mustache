@@ -1,0 +1,23 @@
+{{#notes}}
+<div class="note{{#resolved}} note-done{{/resolved}}">
+  <div class="d-flex flex-wrap align-items-center gap-2">
+    <span class="badge text-bg-warning">{{#target}}{{target}}{{/target}}{{^target}}品番全体{{/target}}</span>
+    {{#resolved}}<span class="badge text-bg-secondary">対応済み</span>{{/resolved}}
+    <span class="text-muted small">{{username}} ・ {{createdJst}}</span>
+  </div>
+  <div class="note-body">{{body}}</div>
+  <div class="d-flex gap-2 mt-1">
+    <form method="post" action="/notes/{{id}}/resolve">
+      <input type="hidden" name="csrf_token" value="{{csrf}}"><input type="hidden" name="back" value="{{back}}">
+      <button class="btn btn-sm btn-outline-secondary">{{#resolved}}未対応に戻す{{/resolved}}{{^resolved}}対応済みにする{{/resolved}}</button>
+    </form>
+    {{#isAdmin}}
+    <form method="post" action="/notes/{{id}}/delete"
+          onsubmit="return confirm('この備考を削除しますか?')">
+      <input type="hidden" name="csrf_token" value="{{csrf}}"><input type="hidden" name="back" value="{{back}}">
+      <button class="btn btn-sm btn-outline-danger">削除</button>
+    </form>
+    {{/isAdmin}}
+  </div>
+</div>
+{{/notes}}

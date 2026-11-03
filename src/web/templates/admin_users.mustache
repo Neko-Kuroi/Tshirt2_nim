@@ -1,0 +1,26 @@
+<h1 class="page-title">ユーザー管理</h1>
+<div class="panel p-0 table-responsive mb-4">
+  <table class="table mb-0 align-middle">
+    <thead><tr><th>ユーザー名</th><th>権限</th><th>状態</th><th>操作</th></tr></thead>
+    <tbody>
+    {{#users}}
+      <tr><td>{{username}}</td><td>{{roleLabel}}</td><td>{{stateLabel}}</td>
+        <td class="d-flex gap-2 flex-wrap">
+          <form method="post" action="/admin/users/{{id}}/toggle"><input type="hidden" name="csrf_token" value="{{csrf}}">
+            <button class="btn btn-sm btn-outline-secondary">{{#isActive}}無効にする{{/isActive}}{{^isActive}}有効にする{{/isActive}}</button></form>
+          <form method="post" action="/admin/users/{{id}}/password" class="d-flex gap-1"><input type="hidden" name="csrf_token" value="{{csrf}}">
+            <input class="form-control form-control-sm" style="min-height:36px;width:9rem" name="password" type="password" placeholder="新パスワード" autocomplete="new-password">
+            <button class="btn btn-sm btn-outline-primary">再設定</button></form>
+        </td></tr>
+    {{/users}}
+    </tbody>
+  </table>
+</div>
+<h2 class="h6 fw-bold">ユーザーを追加</h2>
+<form method="post" class="panel d-grid gap-3" style="max-width:560px">
+  <input type="hidden" name="csrf_token" value="{{csrf}}">
+  <input class="form-control" name="username" placeholder="ユーザー名" autocomplete="off" required>
+  <input class="form-control" name="password" type="password" placeholder="パスワード(8文字以上)" autocomplete="new-password" required>
+  <select class="form-select" name="role"><option value="staff">スタッフ</option><option value="admin">管理者</option></select>
+  <button class="btn btn-primary">追加</button>
+</form>

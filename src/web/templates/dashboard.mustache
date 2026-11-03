@@ -1,0 +1,50 @@
+<h1 class="page-title">ダッシュボード</h1>
+{{^cards}}
+  <div class="panel">カテゴリーがまだありません。<code>flask --app run seed</code> で初期カテゴリーを登録するか、管理画面から追加してください。</div>
+{{/cards}}
+{{#hasCards}}
+<div class="row g-3">
+  {{#cards}}
+  <div class="col-6 col-md-4 col-lg-3">
+    <a class="panel d-block text-decoration-none h-100" href="/blank?category={{id}}">
+      <div class="fw-bold">{{name}}</div>
+      <div class="text-muted small">無地</div><div class="fs-3 num text-start">{{blank}}</div>
+      {{#printable}}
+      <div class="text-muted small">プリント済み</div><div class="fs-5 num text-start">{{printed}}</div>
+      {{/printable}}
+    </a>
+  </div>
+  {{/cards}}
+</div>
+{{/hasCards}}
+
+<h2 class="page-title mt-4">未対応の備考
+  {{#noteCount}}<span class="badge text-bg-warning">{{noteCount}}</span>{{/noteCount}}</h2>
+<div class="panel">
+  {{#notes}}
+  <div class="mb-2">
+    <span class="fw-bold">{{itemLabel}}</span>
+    <span class="badge text-bg-warning">{{#target}}{{target}}{{/target}}{{^target}}品番全体{{/target}}</span>
+    <div class="note-body note-clamp">{{body}}</div>
+  </div>
+  {{/notes}}
+  {{^notes}}
+  <span class="text-muted">未対応の備考はありません。</span>
+  {{/notes}}
+  <a href="/notes">備考の一覧{{#hasRemaining}}(残り {{remaining}} 件){{/hasRemaining}}</a>
+</div>
+
+<h2 class="page-title mt-4">直近の操作</h2>
+<div class="panel p-0 table-responsive">
+  <table class="table mb-0 align-middle">
+    <tbody>
+    {{#recent}}
+      <tr><td class="text-nowrap">{{createdJst}}</td><td>{{kindLabel}}</td>
+          <td>{{targetLabel}}</td><td class="text-end"><span class="num {{#deltaPos}}delta-pos{{/deltaPos}}{{^deltaPos}}delta-neg{{/deltaPos}}">{{deltaStr}}</span></td><td>{{username}}</td></tr>
+    {{/recent}}
+    {{^recent}}
+      <tr><td class="text-muted">まだ操作がありません。「入荷」から登録してください。</td></tr>
+    {{/recent}}
+    </tbody>
+  </table>
+</div>

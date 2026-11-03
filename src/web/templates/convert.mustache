@@ -1,0 +1,23 @@
+<h1 class="page-title">プリント変換</h1>
+<p class="text-muted">無地在庫を使って、プリント済み製品を作ります。ミスプリントで数が減った場合は、使用数と完成数を別々に入力します。</p>
+<form method="post" class="panel d-grid gap-3" style="max-width:560px">
+  <input type="hidden" name="csrf_token" value="{{csrf}}">
+  <div><label class="form-label" for="variant_id">使う無地在庫</label>
+    <select class="form-select" id="variant_id" name="variant_id" required>
+      <option value="">選んでください</option>
+      {{#variants}}
+      <option value="{{id}}" {{#selected}}selected{{/selected}}>
+        [{{categoryName}}] {{label}} (在庫 {{quantity}})</option>
+      {{/variants}}
+    </select></div>
+  <div><label class="form-label" for="design">デザイン</label>
+    <select class="form-select" id="design" name="design">
+      <option value="">新しいデザインを入力 ↓</option>
+      {{#designs}}<option value="{{name}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/designs}}
+    </select>
+    <input class="form-control mt-2" name="design_new" placeholder="新しいデザイン名" value="{{formDesignNew}}"></div>
+  <div>{{#used}}{{> qty_input}}{{/used}}</div>
+  <div>{{#output}}{{> qty_input}}{{/output}}</div>
+  <div><label class="form-label">メモ</label><input class="form-control" name="note" value="{{formNote}}"></div>
+  <button class="btn btn-primary btn-lg">変換する</button>
+</form>

@@ -1,0 +1,122 @@
+[
+{
+"in": "",
+"out": null
+},
+{
+"in": "/",
+"out": "/"
+},
+{
+"in": "/blank",
+"out": "/blank"
+},
+{
+"in": "/blank/list?category=1&q=a%20b",
+"out": "/blank/list?category=1&q=a%20b"
+},
+{
+"in": "/a/b/c",
+"out": "/a/b/c"
+},
+{
+"in": "/login",
+"out": "/login"
+},
+{
+"in": "//evil.example",
+"out": null
+},
+{
+"in": "///evil.example",
+"out": null
+},
+{
+"in": "https://evil.example/",
+"out": null
+},
+{
+"in": "http://evil.example/",
+"out": null
+},
+{
+"in": "javascript:alert(1)",
+"out": null
+},
+{
+"in": "evil",
+"out": null
+},
+{
+"in": "blank",
+"out": null
+},
+{
+"in": "?a=1",
+"out": null
+},
+{
+"in": "#x",
+"out": null
+},
+{
+"in": "/?next=//evil.example",
+"out": "/?next=//evil.example"
+},
+{
+"in": "/%2F%2Fevil.example",
+"out": "/%2F%2Fevil.example"
+},
+{
+"in": "/\\evil.example",
+"out": null
+},
+{
+"in": "/ spaced",
+"out": "/ spaced"
+},
+{
+"in": "/日本語",
+"out": "/日本語"
+},
+{
+"in": "/a:b",
+"out": "/a:b"
+},
+{
+"in": "/path;params",
+"out": "/path;params"
+},
+{
+"in": "\\evil.example",
+"out": null
+},
+{
+"in": "mailto:a@b.c",
+"out": null
+},
+{
+"in": " /blank",
+"out": null
+},
+{
+"in": "//",
+"out": null
+},
+{
+"in": "/.",
+"out": "/."
+},
+{
+"in": "/..",
+"out": "/.."
+},
+{
+"in": "/a//b",
+"out": "/a//b"
+},
+{
+"in": "/a\\b",
+"out": "/a\\b"
+}
+]

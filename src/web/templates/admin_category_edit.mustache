@@ -1,0 +1,12 @@
+<h1 class="page-title">カテゴリー編集: {{name}}</h1>
+<form method="post" class="panel d-grid gap-3" style="max-width:560px">
+  <input type="hidden" name="csrf_token" value="{{csrf}}">
+  <div><label class="form-label">名前</label><input class="form-control" name="name" value="{{name}}" required></div>
+  <div><label class="form-label">表示順</label><input class="form-control" name="sort_order" inputmode="numeric" value="{{sortOrder}}"></div>
+  <div class="form-check"><input class="form-check-input" type="checkbox" name="uses_color" id="uc"{{#useColor}} checked{{/useColor}}><label class="form-check-label" for="uc">色を使う</label></div>
+  <div class="form-check"><input class="form-check-input" type="checkbox" name="uses_size" id="us"{{#useSize}} checked{{/useSize}}><label class="form-check-label" for="us">サイズを使う</label></div>
+  <div class="form-check"><input class="form-check-input" type="checkbox" name="uses_variant_name" id="uv"{{#useVariantName}} checked{{/useVariantName}}><label class="form-check-label" for="uv">種類名を使う</label></div>
+  <div class="form-check"><input class="form-check-input" type="checkbox" name="is_printable" id="ip"{{#isPrintable}} checked{{/isPrintable}}><label class="form-check-label" for="ip">プリント対象</label></div>
+  <div class="form-text">設定を変えても、登録済みの在庫データは消えません。</div>
+  <button class="btn btn-primary">保存</button>
+</form>

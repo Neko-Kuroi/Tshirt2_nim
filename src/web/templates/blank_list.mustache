@@ -1,0 +1,63 @@
+<div class="d-flex justify-content-between align-items-baseline flex-wrap gap-2">
+  <h1 class="page-title">無地在庫</h1>
+  <span class="d-flex gap-2">
+    {{#hasCat}}<a class="btn btn-sm btn-outline-secondary" href="/export/blank.csv?category={{catId}}">CSV(この分類)</a>{{/hasCat}}
+    <a class="btn btn-sm btn-outline-secondary" href="/export/blank.csv">CSV(すべて)</a>
+  </span>
+</div>
+{{^cats}}
+  <div class="panel">カテゴリーがありません。</div>
+{{/cats}}
+{{#hasCats}}
+<ul class="nav nav-pills mb-3 flex-nowrap overflow-auto">
+  {{#cats}}
+  <li class="nav-item"><a class="nav-link{{#active}} active{{/active}} text-nowrap"
+      href="/blank?category={{id}}">{{name}}</a></li>
+  {{/cats}}
+</ul>
+<form class="mb-3 d-flex gap-2" method="get">
+  <input type="hidden" name="category" value="{{catId}}">
+  <input class="form-control" name="q" value="{{q}}" placeholder="ブランド・品番・商品名で検索" type="search">
+  <button class="btn btn-primary">検索</button>
+</form>
+<div class="mb-3"><a class="btn btn-sm btn-outline-secondary" href="/blank/list?category={{catId}}">一覧で絞り込み・並べ替え</a></div>
+
+{{#items}}
+<div class="panel mb-3">
+  <div class="d-flex justify-content-between align-items-baseline flex-wrap">
+    <h2 class="h6 fw-bold mb-2">{{itemLabel}}{{#style}} <span class="badge text-bg-light border">{{style}}</span>{{/style}}</h2>
+    <span class="text-muted small">合計 <span class="num">{{total}}</span></span>
+  </div>
+  {{#hasNotes}}<div class="mb-2">{{#noteList}}{{> note_list}}{{/noteList}}</div>{{/hasNotes}}
+  {{#hasRows}}
+  <div class="table-responsive">
+    <table class="table table-sm matrix mb-0">
+      <thead><tr>
+        <th>{{rowHeader}}</th>
+        {{#sizeHeaders}}<th>{{label}}</th>{{/sizeHeaders}}
+        {{#showTotal}}<th>計</th>{{/showTotal}}
+      </tr></thead>
+      <tbody>
+      {{#rows}}
+        <tr><td>{{label}}{{#hasNote}} <span class="badge text-bg-warning">備考</span>{{/hasNote}}</td>
+          {{#cells}}{{#has}}<td class="num {{cls}}">{{qty}}</td>{{/has}}{{^has}}<td class="num zero">–</td>{{/has}}{{/cells}}
+          {{#showTotal}}<td class="num fw-bold">{{total}}</td>{{/showTotal}}
+        </tr>
+      {{/rows}}
+      </tbody>
+    </table>
+  </div>
+  {{/hasRows}}
+  {{^hasRows}}
+    <div class="text-muted small">在庫登録がありません。</div>
+  {{/hasRows}}
+  <div class="mt-2 d-flex flex-wrap gap-2 align-items-start">
+    <a class="btn btn-sm btn-outline-primary" href="/receive?item_id={{itemId}}">この品番を入荷</a>
+    {{#noteForm}}{{> note_form}}{{/noteForm}}
+  </div>
+</div>
+{{/items}}
+{{^items}}
+<div class="panel text-muted">該当する品番がありません。管理者は「品番」から登録できます。</div>
+{{/items}}
+{{/hasCats}}
