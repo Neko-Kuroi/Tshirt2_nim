@@ -10,9 +10,11 @@
 ## mummy への変換は末尾のアダプター (serveHttp) だけが行う。
 ## テストはソケットを開かず、handle を直接呼んで確かめる。
 
-import std/[atomics, json, options, strutils, tables, times, unicode]
+import std/[atomics, json, locks, options, strutils, tables, times, unicode]
 import nimcrypto/[hmac, sha2, sysrand, utils]
 import mustache
+from mustachepkg/render import toAst
+import mustachepkg/tokens
 import db
 import repo
 import authsvc
@@ -286,6 +288,8 @@ type
     staticFiles: Table[string, StaticFile]
     schemaOk: Atomic[bool]
     warned: Atomic[bool]
+    tplCache: Table[string, seq[Token]] ## テンプレートの AST キャッシュ (renderTpl)
+    tplLock: Lock                        ## tplCache の読み書きを守る
 
 const
   CookieSession* = "session"
@@ -670,6 +674,28 @@ const tplQtyInput = staticRead("web/templates/qty_input.mustache")
 const tplDashboardStub* = staticRead("web/templates/dashboard_stub.mustache")
   ## 手順4で本物のダッシュボードに置き換える仮画面 (テストからも使う)
 
+# テンプレートのパース結果 (AST) のキャッシュ。文字列のまま render すると
+# 毎回 parse が走る (実測で base が約5ms、ページ側が約3.5ms) ため、初回だけ
+# parse+toAst して使い回す。平らな parse 結果ではなく AST を保持するのは、
+# toAst が SectionOpen の children を組み立てる (入力を変更する) ためで、
+# parse 結果の使い回しは二重描画になる。render の各メソッドは Token を
+# 読むだけで変更しないことを vendor 側 render.nim で確認済みなので、AST は
+# 全ワーカーで共有できる。キャッシュは App に持ち、読み書きは App の
+# ロックで守る (GC 対象のグローバル変数は gcsafe 検査を通らないため、
+# グローバルには置かない)。
+proc renderTpl(st: var ReqState, tpl: string, ctx: Context): string =
+  ## パース済み AST から描く。render(tokens) は中で toAst を呼ぶが、
+  ## AST 済みの列 (SectionOpen を含まない) に対しては恒等変換なので、
+  ## 結果は変わらず、Token の変更も起きない。
+  var ast: seq[Token]
+  withLock(st.app.tplLock):
+    if tpl in st.app.tplCache:
+      ast = st.app.tplCache[tpl]
+    else:
+      ast = tpl.parse.toAst
+      st.app.tplCache[tpl] = ast
+  ast.render(ctx)
+
 proc renderPage*(st: var ReqState, status: int, title, pageTpl: string,
                  data: JsonNode): Response =
   ## ページを描画する。ユーザー取得に失敗しても、ナビの表示を省くだけで
@@ -691,7 +717,7 @@ proc renderPage*(st: var ReqState, status: int, title, pageTpl: string,
     for k, v in data:
       pctx[k] = v
   pctx["csrf"] = csrf
-  let content = pageTpl.render(pctx)
+  let content = st.renderTpl(pageTpl, pctx)
   var bctx = newContext()
   bctx.searchTable(partials)
   bctx["title"] = title
@@ -710,7 +736,7 @@ proc renderPage*(st: var ReqState, status: int, title, pageTpl: string,
   bctx["flashes"] = fl
   Response(status: status,
            headers: @[("Content-Type", "text/html; charset=utf-8")],
-           body: tplBase.render(bctx))
+           body: st.renderTpl(tplBase, bctx))
 
 proc errorPage*(st: var ReqState, code: int, message: string): Response =
   try:
@@ -914,7 +940,9 @@ proc newApp*(cfg: WebConfig): App =
     remCodec: newCodec(c.secretKey, "remember"),
     flashCodec: newCodec(c.secretKey, "flash"),
     csrfKey: newCodec(c.secretKey, "csrf").codecKey,
-    staticFiles: buildStaticFiles())
+    staticFiles: buildStaticFiles(),
+    tplCache: initTable[string, seq[Token]]())
+  initLock(result.tplLock)
   result.registerRoutes()
 
 # ---- 処理の流れ (Go 版 Handler() のミドルウェア順と同じ) -----------------------------------------------
