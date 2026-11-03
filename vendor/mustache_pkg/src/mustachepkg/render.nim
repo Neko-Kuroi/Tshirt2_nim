@@ -103,6 +103,27 @@ method render*(token: Parent, ctx: Context): string =
   let children = substituteBlocks(ctx, token, blocks)
   return children.render(ctx)
 
+# Tshirt2_nim でのローカル変更: partial のパース結果をキャッシュする。
+# 元の実装は Partial を描くたびに文字列を parse し直していた。parse+toAst
+# 済みの AST を文字列をキーに保持し、描画はそれを使い回す (render は
+# Token を変更しない)。キャッシュはスレッドごと (threadvar): GC 対象の
+# グローバル変数をロックで守る形は gcsafe 検査を通らないため。
+var partialCache {.threadvar.}: Table[string, seq[Token]]
+var partialCacheReady {.threadvar.}: bool
+
+proc partialAst(s: string): seq[Token] =
+  if not partialCacheReady:
+    partialCache = initTable[string, seq[Token]]()
+    partialCacheReady = true
+  if s in partialCache:
+    return partialCache[s]
+  result = s.parse.toAst
+  partialCache[s] = result
+
+proc renderAst(tokens: seq[Token], ctx: Context): string =
+  for token in tokens:
+    result.add(token.render(ctx))
+
 method render*(token: Partial, ctx: Context): string =
   let s = ctx.read(token.key)
 
@@ -110,7 +131,7 @@ method render*(token: Partial, ctx: Context): string =
   for ln in s.splitLines(keepEol=true):
     if ln != "":
       lns.add(" ".repeat(token.indent) & ln)
-  result = lns.join("").render(ctx)
+  result = renderAst(partialAst(lns.join("")), ctx)
 
 method render*(token: Section, ctx: Context): string =
   let val = ctx[token.key]
