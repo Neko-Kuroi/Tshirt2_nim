@@ -17,7 +17,7 @@
 ## Flask / Go のどちらにも無い)。数量部品 (qty-step) の操作は、埋め込みの
 ## app.js が担う。
 
-import std/[json, options]
+import std/[json, options, strutils]
 import db
 import repo
 import repo_queries
@@ -251,8 +251,10 @@ proc moveHandler(st: var ReqState, req: var Request): Response {.gcsafe.} =
 
 proc noteBack(req: var Request): string =
   ## 備考の操作後に戻る先 (フォームの back。サイト内パスでなければ /notes)。
-  let back = safeNext(req.formValue("back"))
+  var back = safeNext(req.formValue("back"))
   if back != "":
+    if back.endsWith("?") and back.count('?') == 1: # 空のクエリは落とす (Werkzeug と同じ)
+      back = back[0 ..< back.len - 1]
     back
   else:
     "/notes"
