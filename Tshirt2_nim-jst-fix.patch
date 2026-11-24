@@ -1,0 +1,241 @@
+diff --git a/src/util.nim b/src/util.nim
+index ee05bc6..e57a054 100644
+--- a/src/util.nim
++++ b/src/util.nim
+@@ -259,8 +259,11 @@ proc daysInMonth(y, m: int): int =
+   if m == 2 and isLeap(y): 29 else: dm[m - 1]
+ 
+ proc parseDateTime(v: string): (int64, bool) =
+-  ## Go の time.Parse が受ける形: "YYYY-MM-DD HH:MM:SS" / "YYYY-MM-DDTHH:MM:SS"、
+-  ## それぞれ小数秒 (任意) とオフセット ("Z" または "±hh:mm") を付けた形。
++  ## 変換してよい形は Flask 版 _DB_DATETIME_SHAPE と同じ:
++  ## "YYYY-MM-DD HH:MM:SS" / "YYYY-MM-DDTHH:MM:SS"、それぞれ小数秒 (任意) と
++  ## オフセット ("Z" または "±hh:mm") を付けた形。年 0000 は Python の
++  ## datetime の範囲外なので受けない。小数秒のカンマ区切りも受けない
++  ## (Go の time.Parse は通すが、Python の正規表現は通さない)。
+   ## 戻り値は Unix 秒 (UTC)。解釈できなければ ok=false。
+   if v.len < 19:
+     return (0'i64, false)
+@@ -282,12 +285,13 @@ proc parseDateTime(v: string): (int64, bool) =
+   if v[4] != '-' or v[7] != '-' or (v[10] != ' ' and v[10] != 'T') or
+      v[13] != ':' or v[16] != ':':
+     return (0'i64, false)
+-  if month < 1 or month > 12 or day < 1 or day > daysInMonth(year, month) or
++  if year == 0 or month < 1 or month > 12 or day < 1 or
++     day > daysInMonth(year, month) or
+      hour > 23 or minute > 59 or second > 59:
+     return (0'i64, false)
+   var i = 19
+-  if i < v.len and (v[i] == '.' or v[i] == ','):
+-    # 小数秒: 1桁以上の数字が要る (Go のパーサと同じ)
++  if i < v.len and v[i] == '.':
++    # 小数秒: 1桁以上の数字が要る
+     var j = i + 1
+     while j < v.len and v[j] >= '0' and v[j] <= '9':
+       j += 1
+@@ -314,8 +318,10 @@ proc pad2(n: int): string =
+   if n < 10: "0" & $n else: $n
+ 
+ proc formatJst*(v: string): string =
+-  ## UTC 文字列を JST の "MM/DD HH:MM" に直す (Flask 版 format_jst の移植)。
+-  ## 空文字は空文字、解釈できない値はそのまま返す (Flask 版と同じ)。
++  ## UTC 文字列を JST の "YYYY/MM/DD HH:MM" に直す (Flask 版 jst フィルタの移植)。
++  ## 空文字は空文字。変換できるのは parseDateTime が受ける形だけ。
++  ## 変換すると年が 1〜9999 の範囲を超える値も、解釈できない値と同じく、
++  ## そのまま返す (Python では OverflowError になる範囲)。
+   if v == "":
+     return ""
+   let (unix, ok) = parseDateTime(v)
+@@ -324,9 +330,11 @@ proc formatJst*(v: string): string =
+   let jst = unix + jstOffsetSeconds
+   let days = if jst >= 0: jst div 86400 else: -((-jst + 86399) div 86400)
+   let secs = int(jst - days * 86400)
+-  let (_, month, day) = civilFromDays(days)
+-  pad2(month) & "/" & pad2(day) & " " & pad2(secs div 3600) & ":" &
+-    pad2((secs mod 3600) div 60)
++  let (year, month, day) = civilFromDays(days)
++  if year < 1 or year > 9999:
++    return v
++  align($year, 4, '0') & "/" & pad2(month) & "/" & pad2(day) & " " &
++    pad2(secs div 3600) & ":" & pad2((secs mod 3600) div 60)
+ 
+ proc dateStampJst*(unixSeconds: int64): string =
+   ## CSV ファイル名に使う JST の日付スタンプ "YYYYMMDD"。
+diff --git a/tests/testdata/util/jst.json b/tests/testdata/util/jst.json
+new file mode 100644
+index 0000000..c3466ce
+--- /dev/null
++++ b/tests/testdata/util/jst.json
+@@ -0,0 +1,118 @@
++[
++{
++"in": "2026-11-21 15:13:26",
++"out": "2026/11/22 00:13"
++},
++{
++"in": "2026-01-01 00:00:00",
++"out": "2026/01/01 09:00"
++},
++{
++"in": "2025-12-31 14:59:59",
++"out": "2025/12/31 23:59"
++},
++{
++"in": "2024-12-31 15:00:00",
++"out": "2025/01/01 00:00"
++},
++{
++"in": "2028-02-29 15:00:00",
++"out": "2028/03/01 00:00"
++},
++{
++"in": "0001-01-01 00:00:00",
++"out": "0001/01/01 09:00"
++},
++{
++"in": "2026-11-21T15:13:26",
++"out": "2026/11/22 00:13"
++},
++{
++"in": "2026-11-21 15:13:26.123456",
++"out": "2026/11/22 00:13"
++},
++{
++"in": "2026-10-04 00:20:10.887356",
++"out": "2026/10/04 09:20"
++},
++{
++"in": "2026-10-04 00:20:10.887356+09:00",
++"out": "2026/10/04 00:20"
++},
++{
++"in": "2026-01-01 09:00:00+09:00",
++"out": "2026/01/01 09:00"
++},
++{
++"in": "2026-01-01 00:00:00+00:00",
++"out": "2026/01/01 09:00"
++},
++{
++"in": "2026-11-21T15:13:26Z",
++"out": "2026/11/22 00:13"
++},
++{
++"in": "9999-12-31 14:59:59",
++"out": "9999/12/31 23:59"
++},
++{
++"in": "",
++"out": ""
++},
++{
++"in": "garbage",
++"out": "garbage"
++},
++{
++"in": "not a date",
++"out": "not a date"
++},
++{
++"in": "2026-13-01 00:00:00",
++"out": "2026-13-01 00:00:00"
++},
++{
++"in": "2026-02-29 00:00:00",
++"out": "2026-02-29 00:00:00"
++},
++{
++"in": "2026-11-21 24:00:00",
++"out": "2026-11-21 24:00:00"
++},
++{
++"in": "2026-11-21",
++"out": "2026-11-21"
++},
++{
++"in": "20261121",
++"out": "20261121"
++},
++{
++"in": "2026-W46-6",
++"out": "2026-W46-6"
++},
++{
++"in": "2026-1-1 1:2:3",
++"out": "2026-1-1 1:2:3"
++},
++{
++"in": "0000-01-01 00:00:00",
++"out": "0000-01-01 00:00:00"
++},
++{
++"in": "9999-12-31 15:00:00",
++"out": "9999-12-31 15:00:00"
++},
++{
++"in": "2026-11-21 15:13:26,5",
++"out": "2026-11-21 15:13:26,5"
++},
++{
++"in": "2026-11-21 15:13:26+0900",
++"out": "2026-11-21 15:13:26+0900"
++},
++{
++"in": "2026-11-21 15:13:26 +09:00",
++"out": "2026-11-21 15:13:26 +09:00"
++}
++]
+\ No newline at end of file
+diff --git a/tests/tutil.nim b/tests/tutil.nim
+index dafa708..3664938 100644
+--- a/tests/tutil.nim
++++ b/tests/tutil.nim
+@@ -64,6 +64,15 @@ suite "python vectors":
+       let want = if outNode.kind == JNull: "" else: outNode.getStr
+       check safeNext(c["in"].getStr) == want
+ 
++  test "formatJst matches Python (29 cases)":
++    # 期待値は修正済み Flask 版 jst フィルタの出力 (Go 版の
++    # tools/gen_util_vectors.py が生成した jst.json と同じもの)。
++    # 年つき表示・変換できる形の縛り・変換できない値はそのまま、まで一致させる。
++    let cases = loadJson("jst.json")
++    check cases.len >= 25
++    for c in cases:
++      check formatJst(c["in"].getStr) == c["out"].getStr
++
+ suite "sizeKey (Flask test_utils port)":
+   test "known sizes come first":
+     check sortedSizes(@["XL", "10", "S", "2", "M"]) == @["S", "M", "XL", "2", "10"]
+@@ -115,19 +124,6 @@ suite "toInt edges":
+     check truncateRunes(repeat("あ", 5000), 100) == repeat("あ", 100)
+ 
+ suite "jst":
+-  test "formatJst":
+-    let cases = {
+-      "2026-10-31 15:00:00": "11/01 00:00", # UTC 15:00 = JST 翌日 0:00
+-      "2026-10-04 00:20:10.887356": "10/04 09:20", # 小数秒付き
+-      "2026-01-01T00:00:00": "01/01 09:00",
+-      "2026-01-01 00:00:00+00:00": "01/01 09:00",
+-      "2026-01-01 09:00:00+09:00": "01/01 09:00", # オフセット付きは JST に直す
+-      "": "",
+-      "not a date": "not a date",
+-    }
+-    for (input, want) in cases:
+-      check formatJst(input) == want
+-
+   test "dateStampJst":
+     # UTC の 15:30 は JST では翌日。ファイル名の日付は JST で決まる
+     let utc = dateTime(2026, mOct, 31, 15, 30, 0, zone = utc()).toTime.toUnix
+diff --git a/tests/twebread.nim b/tests/twebread.nim
+index 620a557..bbabb32 100644
+--- a/tests/twebread.nim
++++ b/tests/twebread.nim
+@@ -151,7 +151,7 @@ suite "dashboard":
+     check r.contains("""<div class="fs-3 num text-start">5</div>""")
+     check r.contains("""<span class="badge text-bg-warning">1</span>""") # 未対応の備考の件数
+     check r.contains("白は補充注意")
+-    check r.contains("11/01 09:00") # UTC 00:00 → JST
++    check r.contains("2026/11/01 09:00") # UTC 00:00 → JST (年つき表示)
+     check r.contains("入荷")
+     check r.contains("Fruit 001 ヘビーウェイトT | 白 / M")
+     # Go 版は html/template が '+' を &#43; にするが、mustache はそのまま出す (表示は同じ +10)

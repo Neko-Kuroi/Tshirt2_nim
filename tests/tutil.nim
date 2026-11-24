@@ -64,6 +64,15 @@ suite "python vectors":
       let want = if outNode.kind == JNull: "" else: outNode.getStr
       check safeNext(c["in"].getStr) == want
 
+  test "formatJst matches Python (29 cases)":
+    # 期待値は修正済み Flask 版 jst フィルタの出力 (Go 版の
+    # tools/gen_util_vectors.py が生成した jst.json と同じもの)。
+    # 年つき表示・変換できる形の縛り・変換できない値はそのまま、まで一致させる。
+    let cases = loadJson("jst.json")
+    check cases.len >= 25
+    for c in cases:
+      check formatJst(c["in"].getStr) == c["out"].getStr
+
 suite "sizeKey (Flask test_utils port)":
   test "known sizes come first":
     check sortedSizes(@["XL", "10", "S", "2", "M"]) == @["S", "M", "XL", "2", "10"]
@@ -115,19 +124,6 @@ suite "toInt edges":
     check truncateRunes(repeat("あ", 5000), 100) == repeat("あ", 100)
 
 suite "jst":
-  test "formatJst":
-    let cases = {
-      "2026-10-31 15:00:00": "11/01 00:00", # UTC 15:00 = JST 翌日 0:00
-      "2026-10-04 00:20:10.887356": "10/04 09:20", # 小数秒付き
-      "2026-01-01T00:00:00": "01/01 09:00",
-      "2026-01-01 00:00:00+00:00": "01/01 09:00",
-      "2026-01-01 09:00:00+09:00": "01/01 09:00", # オフセット付きは JST に直す
-      "": "",
-      "not a date": "not a date",
-    }
-    for (input, want) in cases:
-      check formatJst(input) == want
-
   test "dateStampJst":
     # UTC の 15:30 は JST では翌日。ファイル名の日付は JST で決まる
     let utc = dateTime(2026, mOct, 31, 15, 30, 0, zone = utc()).toTime.toUnix

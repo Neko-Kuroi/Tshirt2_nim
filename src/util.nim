@@ -259,8 +259,11 @@ proc daysInMonth(y, m: int): int =
   if m == 2 and isLeap(y): 29 else: dm[m - 1]
 
 proc parseDateTime(v: string): (int64, bool) =
-  ## Go の time.Parse が受ける形: "YYYY-MM-DD HH:MM:SS" / "YYYY-MM-DDTHH:MM:SS"、
-  ## それぞれ小数秒 (任意) とオフセット ("Z" または "±hh:mm") を付けた形。
+  ## 変換してよい形は Flask 版 _DB_DATETIME_SHAPE と同じ:
+  ## "YYYY-MM-DD HH:MM:SS" / "YYYY-MM-DDTHH:MM:SS"、それぞれ小数秒 (任意) と
+  ## オフセット ("Z" または "±hh:mm") を付けた形。年 0000 は Python の
+  ## datetime の範囲外なので受けない。小数秒のカンマ区切りも受けない
+  ## (Go の time.Parse は通すが、Python の正規表現は通さない)。
   ## 戻り値は Unix 秒 (UTC)。解釈できなければ ok=false。
   if v.len < 19:
     return (0'i64, false)
@@ -282,12 +285,13 @@ proc parseDateTime(v: string): (int64, bool) =
   if v[4] != '-' or v[7] != '-' or (v[10] != ' ' and v[10] != 'T') or
      v[13] != ':' or v[16] != ':':
     return (0'i64, false)
-  if month < 1 or month > 12 or day < 1 or day > daysInMonth(year, month) or
+  if year == 0 or month < 1 or month > 12 or day < 1 or
+     day > daysInMonth(year, month) or
      hour > 23 or minute > 59 or second > 59:
     return (0'i64, false)
   var i = 19
-  if i < v.len and (v[i] == '.' or v[i] == ','):
-    # 小数秒: 1桁以上の数字が要る (Go のパーサと同じ)
+  if i < v.len and v[i] == '.':
+    # 小数秒: 1桁以上の数字が要る
     var j = i + 1
     while j < v.len and v[j] >= '0' and v[j] <= '9':
       j += 1
@@ -314,8 +318,10 @@ proc pad2(n: int): string =
   if n < 10: "0" & $n else: $n
 
 proc formatJst*(v: string): string =
-  ## UTC 文字列を JST の "MM/DD HH:MM" に直す (Flask 版 format_jst の移植)。
-  ## 空文字は空文字、解釈できない値はそのまま返す (Flask 版と同じ)。
+  ## UTC 文字列を JST の "YYYY/MM/DD HH:MM" に直す (Flask 版 jst フィルタの移植)。
+  ## 空文字は空文字。変換できるのは parseDateTime が受ける形だけ。
+  ## 変換すると年が 1〜9999 の範囲を超える値も、解釈できない値と同じく、
+  ## そのまま返す (Python では OverflowError になる範囲)。
   if v == "":
     return ""
   let (unix, ok) = parseDateTime(v)
@@ -324,9 +330,11 @@ proc formatJst*(v: string): string =
   let jst = unix + jstOffsetSeconds
   let days = if jst >= 0: jst div 86400 else: -((-jst + 86399) div 86400)
   let secs = int(jst - days * 86400)
-  let (_, month, day) = civilFromDays(days)
-  pad2(month) & "/" & pad2(day) & " " & pad2(secs div 3600) & ":" &
-    pad2((secs mod 3600) div 60)
+  let (year, month, day) = civilFromDays(days)
+  if year < 1 or year > 9999:
+    return v
+  align($year, 4, '0') & "/" & pad2(month) & "/" & pad2(day) & " " &
+    pad2(secs div 3600) & ":" & pad2((secs mod 3600) div 60)
 
 proc dateStampJst*(unixSeconds: int64): string =
   ## CSV ファイル名に使う JST の日付スタンプ "YYYYMMDD"。

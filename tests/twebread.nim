@@ -151,7 +151,7 @@ suite "dashboard":
     check r.contains("""<div class="fs-3 num text-start">5</div>""")
     check r.contains("""<span class="badge text-bg-warning">1</span>""") # 未対応の備考の件数
     check r.contains("白は補充注意")
-    check r.contains("11/01 09:00") # UTC 00:00 → JST
+    check r.contains("2026/11/01 09:00") # UTC 00:00 → JST (年つき表示)
     check r.contains("入荷")
     check r.contains("Fruit 001 ヘビーウェイトT | 白 / M")
     # Go 版は html/template が '+' を &#43; にするが、mustache はそのまま出す (表示は同じ +10)
